@@ -38,9 +38,9 @@ whisper: submodule
 ifeq ($(DETECTED_OS),windows)
 	@make -C third_party/whisper.cpp CC=x86_64-w64-mingw32-gcc libwhisper.a
 else ifeq ($(DETECTED_OS),macos)
-	@make -C third_party/whisper.cpp CXX=x86_64-apple-darwin-g++ libwhisper.a
+	@make -C third_party/whisper.cpp libwhisper.a
 else ifeq ($(DETECTED_OS),linux)
-	@make -C third_party/whisper.cpp CC=x86_64-linux-gnu-gcc libwhisper.a
+	@make -C third_party/whisper.cpp libwhisper.a
 endif
 
 model-downloader: submodule mkdir
@@ -49,10 +49,10 @@ ifeq ($(DETECTED_OS),windows)
 	@make -C third_party/whisper.cpp/bindings/go CC=x86_64-w64-mingw32-gcc examples/go-model-download
 	@install third_party/whisper.cpp/bindings/go/build/go-model-download.exe ${BUILD_DIR}
 else ifeq ($(DETECTED_OS),macos)
-	@make -C third_party/whisper.cpp/bindings/go CXX=x86_64-apple-darwin-g++ examples/go-model-download
+	@make -C third_party/whisper.cpp/bindings/go examples/go-model-download
 	@install third_party/whisper.cpp/bindings/go/build/go-model-download ${BUILD_DIR}
 else ifeq ($(DETECTED_OS),linux)
-	@make -C third_party/whisper.cpp/bindings/go CC=x86_64-linux-gnu-gcc examples/go-model-download
+	@make -C third_party/whisper.cpp/bindings/go examples/go-model-download
 	@install third_party/whisper.cpp/bindings/go/build/go-model-download ${BUILD_DIR}
 endif
 
@@ -62,10 +62,10 @@ ifeq ($(DETECTED_OS),windows)
 	@make -C third_party/whisper.cpp/bindings/go CC=x86_64-w64-mingw32-gcc examples/go-whisper
 	@install third_party/whisper.cpp/bindings/go/build/go-whisper.exe ${BUILD_DIR}
 else ifeq ($(DETECTED_OS),macos)
-	@make -C third_party/whisper.cpp/bindings/go CXX=x86_64-apple-darwin-g++ examples/go-whisper
+	@make -C third_party/whisper.cpp/bindings/go  examples/go-whisper
 	@install third_party/whisper.cpp/bindings/go/build/go-whisper ${BUILD_DIR}
 else ifeq ($(DETECTED_OS),linux)
-	@make -C third_party/whisper.cpp/bindings/go CC=x86_64-linux-gnu-gcc examples/go-whisper
+	@make -C third_party/whisper.cpp/bindings/go  examples/go-whisper
 	@install third_party/whisper.cpp/bindings/go/build/go-whisper ${BUILD_DIR}
 endif
 
