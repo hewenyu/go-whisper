@@ -27,7 +27,7 @@ jobs:
           go-version: '^1.19'
     
       - name: Clone
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
 
       - name: Dependencies
         run: |
@@ -56,7 +56,7 @@ jobs:
           go-version: '^1.19'
           
       - name: Clone
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
 
       - name: Dependencies
         run: |
