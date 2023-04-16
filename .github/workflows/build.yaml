@@ -17,62 +17,62 @@ on: [push ,pull_request]
 
 
 jobs:
-  ubuntu-latest:
-    runs-on: ubuntu-latest
+  # ubuntu-latest:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: setenv
-        uses: actions/setup-go@v3
-        with:
-          go-version: '^1.19'
+  #   steps:
+  #     - name: setenv
+  #       uses: actions/setup-go@v3
+  #       with:
+  #         go-version: '^1.19'
     
-      - name: Clone
-        uses: actions/checkout@v3
+  #     - name: Clone
+  #       uses: actions/checkout@v3
 
-      - name: Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install build-essential
-          sudo apt-get install libsdl2-dev
+  #     - name: Dependencies
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install build-essential
+  #         sudo apt-get install libsdl2-dev
 
-      - name: Build
-        run: |
-          make all
-          ls build/
+  #     - name: Build
+  #       run: |
+  #         make all
+  #         ls build/
 
-      - name: Upload binaries
-        uses: actions/upload-artifact@v3
-        with:
-          name: whisper-linux-bin
-          path: build/
+  #     - name: Upload binaries
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: whisper-linux-bin
+  #         path: build/
 
-  macOS-latest:
-    runs-on: macos-latest
+  # macOS-latest:
+  #   runs-on: macos-latest
 
-    steps:
-      - name: setenv
-        uses: actions/setup-go@v3
-        with:
-          go-version: '^1.19'
+  #   steps:
+  #     - name: setenv
+  #       uses: actions/setup-go@v3
+  #       with:
+  #         go-version: '^1.19'
           
-      - name: Clone
-        uses: actions/checkout@v3
+  #     - name: Clone
+  #       uses: actions/checkout@v3
 
-      - name: Dependencies
-        run: |
-          brew update
-          brew install sdl2
+  #     - name: Dependencies
+  #       run: |
+  #         brew update
+  #         brew install sdl2
 
-      - name: Build
-        run: |
-          make all
-          ls build/
+  #     - name: Build
+  #       run: |
+  #         make all
+  #         ls build/
 
-      - name: Upload binaries
-        uses: actions/upload-artifact@v3
-        with:
-          name: whisper-darwin-bin
-          path: build/
+  #     - name: Upload binaries
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: whisper-darwin-bin
+  #         path: build/
 
   windows-latest:
     runs-on: windows-latest
@@ -106,11 +106,11 @@ jobs:
           7z x sdl2.zip
           echo "SDL2_DIR=$env:GITHUB_WORKSPACE/SDL2-${{ matrix.s2ver }}/cmake" >> $env:GITHUB_ENV
 
-      - name: Configure
-        run: >
-          cmake -S . -B ./build -A ${{ matrix.arch }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.build }}
-          -DWHISPER_SUPPORT_SDL2=${{ matrix.sdl2 }}
+      # - name: Configure
+      #   run: >
+      #     cmake -S . -B ./build -A ${{ matrix.arch }}
+      #     -DCMAKE_BUILD_TYPE=${{ matrix.build }}
+      #     -DWHISPER_SUPPORT_SDL2=${{ matrix.sdl2 }}
 
       - name: Copy SDL2.dll
         if: matrix.sdl2 == 'ON'
