@@ -85,3 +85,4 @@ ifeq ($(DETECTED_OS),windows)
 	@C_INCLUDE_PATH=${INCLUDE_PATH} LIBRARY_PATH=${LIBRARY_PATH} GOOS=windows GOARCH=amd64 ${GO} build ${BUILD_FLAGS} -o ${BUILD_DIR}/$(notdir $@).exe ./$@
 else
 	@C_INCLUDE_PATH=${INCLUDE_PATH} LIBRARY_PATH
+endif
