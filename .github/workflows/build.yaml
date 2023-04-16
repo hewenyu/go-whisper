@@ -73,3 +73,45 @@ jobs:
         with:
           name: whisper-darwin-bin
           path: build/
+
+  windows-latest:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        build: [Release]
+        sdl2: [ON]
+        include:
+          - sdl2: ON
+            s2ver: 2.26.0
+
+    steps:
+      - name: setenv
+        uses: actions/setup-go@v3
+        with:
+          go-version: '^1.19'
+
+      - name: Clone
+        uses: actions/checkout@v3
+
+      - name: Fetch SDL2 and set SDL2_DIR
+        if: matrix.sdl2 == 'ON'
+        run: |
+          C:/msys64/usr/bin/wget.exe -qO sdl2.zip https://github.com/libsdl-org/SDL/releases/download/release-${{ matrix.s2ver }}/SDL2-devel-${{ matrix.s2ver }}-VC.zip
+          7z x sdl2.zip
+          echo "SDL2_DIR=$env:GITHUB_WORKSPACE/SDL2-${{ matrix.s2ver }}/cmake" >> $env:GITHUB_ENV
+
+      - name: Copy SDL2.dll
+        if: matrix.sdl2 == 'ON'
+        run: copy "$env:SDL2_DIR/../lib/${{ matrix.s2arc }}/SDL2.dll" ./
+  
+      - name: Build
+        run: |
+          make all
+          ls build/
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: whisper-windows-bin
+          path: build/
