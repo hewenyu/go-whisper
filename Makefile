@@ -84,5 +84,23 @@ $(CMD_DIR): dependencies mkdir
 ifeq ($(DETECTED_OS),windows)
 	@C_INCLUDE_PATH=${INCLUDE_PATH} LIBRARY_PATH=${LIBRARY_PATH} GOOS=windows GOARCH=amd64 ${GO} build ${BUILD_FLAGS} -o ${BUILD_DIR}/$(notdir $@).exe ./$@
 else
-	@C_INCLUDE_PATH=${INCLUDE_PATH} LIBRARY_PATH
+	@C_INCLUDE_PATH=${INCLUDE_PATH} LIBRARY_PATH=${LIBRARY_PATH} GOARCH=amd64 ${GO} build ${BUILD_FLAGS} -o ${BUILD_DIR}/$(notdir $@) ./$@
 endif
+
+FORCE:
+
+dependencies:
+	@test -f "${GO}" && test -x "${GO}"  || (echo "Missing go binary" && exit 1)
+	@test -f "${GIT}" && test -x "${GIT}"  || (echo "Missing git binary" && exit 1)
+
+mkdir:
+	@echo Mkdir ${BUILD_DIR} ${MODEL_DIR}
+	@install -d ${BUILD_DIR}
+	@install -d ${MODEL_DIR}
+
+clean:
+	@echo Clean
+	@rm -fr $(BUILD_DIR)
+	@${GIT} submodule deinit --all -f
+	@${GO} mod tidy
+	@${GO} clean
