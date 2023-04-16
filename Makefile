@@ -35,66 +35,53 @@ submodule:
 
 whisper: submodule
 	@echo Build whisper
-ifeq (${DETECTED_OS},windows)
-	@cd third_party\whisper.cpp && mingw32-make libwhisper.a
-else
-	@make -C third_party/whisper.cpp libwhisper.a
+ifeq ($(DETECTED_OS),windows)
+	@make -C third_party/whisper.cpp CC=x86_64-w64-mingw32-gcc libwhisper.a
+else ifeq ($(DETECTED_OS),macos)
+	@make -C third_party/whisper.cpp CXX=x86_64-apple-darwin-g++ libwhisper.a
+else ifeq ($(DETECTED_OS),linux)
+	@make -C third_party/whisper.cpp CC=x86_64-linux-gnu-gcc libwhisper.a
 endif
 
 model-downloader: submodule mkdir
 	@echo Build model-downloader
-ifeq (${DETECTED_OS},windows)
-	@cd third_party\whisper.cpp\bindings\go && mingw32-make examples/go-model-download
-	@install third_party\whisper.cpp\bindings\go\build\go-model-download ${BUILD_DIR}
-else
-	@make -C third_party/whisper.cpp/bindings/go examples/go-model-download
+ifeq ($(DETECTED_OS),windows)
+	@make -C third_party/whisper.cpp/bindings/go CC=x86_64-w64-mingw32-gcc examples/go-model-download
+	@install third_party/whisper.cpp/bindings/go/build/go-model-download.exe ${BUILD_DIR}
+else ifeq ($(DETECTED_OS),macos)
+	@make -C third_party/whisper.cpp/bindings/go CXX=x86_64-apple-darwin-g++ examples/go-model-download
+	@install third_party/whisper.cpp/bindings/go/build/go-model-download ${BUILD_DIR}
+else ifeq ($(DETECTED_OS),linux)
+	@make -C third_party/whisper.cpp/bindings/go CC=x86_64-linux-gnu-gcc examples/go-model-download
 	@install third_party/whisper.cpp/bindings/go/build/go-model-download ${BUILD_DIR}
 endif
 
 go-whisper: submodule mkdir
 	@echo Build go-whisper
-ifeq (${DETECTED_OS},windows)
-	@cd third_party\whisper.cpp\bindings\go && mingw32-make examples/go-whisper
-	@install third_party\whisper.cpp\bindings\go\build\go-whisper ${BUILD_DIR}
-else
-	@make -C third_party/whisper.cpp/bindings/go examples/go-whisper
+ifeq ($(DETECTED_OS),windows)
+	@make -C third_party/whisper.cpp/bindings/go CC=x86_64-w64-mingw32-gcc examples/go-whisper
+	@install third_party/whisper.cpp/bindings/go/build/go-whisper.exe ${BUILD_DIR}
+else ifeq ($(DETECTED_OS),macos)
+	@make -C third_party/whisper.cpp/bindings/go CXX=x86_64-apple-darwin-g++ examples/go-whisper
+	@install third_party/whisper.cpp/bindings/go/build/go-whisper ${BUILD_DIR}
+else ifeq ($(DETECTED_OS),linux)
+	@make -C third_party/whisper.cpp/bindings/go CC=x86_64-linux-gnu-gcc examples/go-whisper
 	@install third_party/whisper.cpp/bindings/go/build/go-whisper ${BUILD_DIR}
 endif
 
-
 models: model-downloader
 	@echo Downloading models
+ifeq ($(DETECTED_OS),windows)
+	@${BUILD_DIR}/go-model-download.exe -out ${MODEL_DIR}
+else
 	@${BUILD_DIR}/go-model-download -out ${MODEL_DIR}
+endif
 
 cmd: whisper $(wildcard cmd/*)
 
 $(CMD_DIR): dependencies mkdir
 	@echo Build cmd $(notdir $@)
-ifeq (${DETECTED_OS},windows)
-	@set C_INCLUDE_PATH=${INCLUDE_PATH} && set LIBRARY_PATH=${LIBRARY_PATH} && $(GO) build ${BUILD_FLAGS} -o ${BUILD_DIR}\$(notdir $@) .\$@
+ifeq ($(DETECTED_OS),windows)
+	@C_INCLUDE_PATH=${INCLUDE_PATH} LIBRARY_PATH=${LIBRARY_PATH} GOOS=windows GOARCH=amd64 ${GO} build ${BUILD_FLAGS} -o ${BUILD_DIR}/$(notdir $@).exe ./$@
 else
-	@C_INCLUDE_PATH=${INCLUDE_PATH} LIBRARY_PATH=${LIBRARY_PATH} ${GO} build ${BUILD_FLAGS} -o ${BUILD_DIR}/$(notdir $@) ./$@
-endif
-
-FORCE:
-
-dependencies:
-	@test -f "${GO}" && test -x "${GO}"  || (echo "Missing go binary" && exit 1)
-	@test -f "${GIT}" && test -x "${GIT}"  || (echo "Missing git binary" && exit 1)
-
-mkdir:
-	@echo Mkdir ${BUILD_DIR} ${MODEL_DIR}
-	@install -d ${BUILD_DIR}
-	@install -d ${MODEL_DIR}
-
-clean:
-	@echo Clean
-ifeq (${DETECTED_OS},windows)
-	@if exist $(BUILD_DIR) rd /s /q $(BUILD_DIR)
-	@$(GIT) submodule deinit --all -f
-else
-	@rm -fr $(BUILD_DIR)
-	@${GIT} submodule deinit --all -f
-endif
-	@${GO} mod tidy
-	@${GO} clean
+	@C_INCLUDE_PATH=${INCLUDE_PATH} LIBRARY_PATH
