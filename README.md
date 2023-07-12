@@ -26,7 +26,13 @@ The following `Makefile` targets can be used:
 ## Download Model
 
 ```bash
-./build/go-model-download -out models ggml-small.en.bin
+./build/go-model-download -out models ggml-tiny.en.bin
+```
+
+## Process
+
+```bash
+./build/process -model models/ggml-tiny.en.bin -out srt samples/jfk.wav
 ```
 
 ## Streaming Translation
